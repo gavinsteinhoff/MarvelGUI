@@ -6,39 +6,71 @@
     <title>@ViewBag.Title - My ASP.NET Application</title>
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
-
+    <style>
+        .__displayItem:hover {
+            transform: translateY(-15px);
+        }
+    </style>
 </head>
-<body>
-    <div class="navbar navbar-inverse navbar-fixed-top">
-        <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                @Html.ActionLink("Application name", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+<body class="bg-light">
+
+    <div class="container-fluid my-3">
+        <div class="d-flex flex-row border-bottom mb-3 row">
+            <div class="d-flex flex-grow-1 col-12 col-lg-7">
+                <h2>
+                    <a class="text-danger" href="/home">Marvel Api Viewer</a><span class="text-muted"> - @ViewBag.Title</span>
+                </h2>
             </div>
-            <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    <li>@Html.ActionLink("Home", "Index", "Home")</li>
-                    <li>@Html.ActionLink("About", "About", "Home")</li>
-                    <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
-                </ul>
-                @Html.Partial("_LoginPartial")
+            <div class="col-12 col-lg-5 d-flex flex-sm-row flex-column justify-content-end mb-sm-3">
+                <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle mr-1" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Limit
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <a class="dropdown-item limit" href="#">20</a>
+                        <a class="dropdown-item limit" href="#">40</a>
+                        <a class="dropdown-item limit" href="#">60</a>
+                        <a class="dropdown-item limit" href="#">80</a>
+                        <a class="dropdown-item limit" href="#">100</a>
+                    </div>
+                </div>
+                <form class="form-inline d-block">
+                    <div class="form-group">
+                        <input type="text" class="form-control mr-1" id="search" placeholder="search">
+                        <button type="button" id="searchBtn" class="btn btn-primary">Search</button>
+                    </div>
+                </form>
             </div>
         </div>
-    </div>
-    <div class="container body-content">
         @RenderBody()
-        <hr />
         <footer>
-            <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
+            <p>@ViewBag.Copyright</p>
         </footer>
     </div>
 
+
     @Scripts.Render("~/bundles/jquery")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
     @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)
+    <script>
+        $(function () {
+            $("#searchBtn").click(function () {
+                window.location.href = "/home/search?startsWith=" + $("#search").val();
+            });
+            $(".limit").click(function () {
+                window.location.href = (replaceUrlParam(window.location.href, "userLimit", $(this).html()));
+            });
+        })
+
+        function replaceUrlParam(url, paramName, paramValue) {
+            var pattern = new RegExp('\\b(' + paramName + '=).*?(&|#|$)');
+            if (url.search(pattern) >= 0) {
+                return url.replace(pattern, '$1' + paramValue + '$2');
+            }
+            url = url.replace(/[?#]$/, '');
+            return url + (url.indexOf('?') > 0 ? '&' : '?') + paramName + '=' + paramValue;
+        }
+    </script>
 </body>
 </html>

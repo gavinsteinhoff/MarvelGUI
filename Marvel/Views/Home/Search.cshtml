@@ -1,0 +1,78 @@
+﻿@model Marvel.Models.CharacterViewModel
+@{
+    ViewBag.Title = "Search";
+    ViewBag.Copyright = Model.AttributionText;
+}
+
+@if (Model != null && Model.Data.Count > 0)
+{
+    <div class="card-columns px-1">
+        @foreach (var character in Model.Data.Results)
+                {
+            <div class="card" style="width: 18rem;">
+                <img class="card-img-top" src="@character.Thumbnail.Path.@character.Thumbnail.Extension.ToString().ToLower()" alt="@character.Name Image">
+                <div class="card-body">
+                    <h5 class="card-title">@character.Name</h5>
+                    <p class="card-text">@character.Description</p>
+                    @Html.ActionLink("More Info", "Character", new { controller = "Home", id = character.Id }, new { @class = "btn btn-primary" })
+                </div>
+            </div>
+        }
+    </div>
+        <nav aria-label="...">
+            <ul class="pagination">
+                @if (Model.Data.Count != Model.Data.Total)
+                {
+                    if (Model.Data.Offset == 0)
+                    {
+                        <li class="page-item disabled">
+                            <span class="page-link">Previous</span>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="page-item">
+                            @Html.ActionLink("Previous", "Search", "Home", new { startsWith = ViewBag.StartsWith, userLimit = Model.Data.Limit, userOffset = Model.Data.Offset - Model.Data.Limit }, new { @class = "page-link" })
+                        </li>
+                    }
+
+                    long currentPage = Model.Data.Offset / Model.Data.Limit + 1;
+                    for (int i = -2; i <= 2; i++)
+                    {
+                        if (i == 0)
+                        {
+                            <li class="page-item active">
+                                <span class="page-link">
+                                    @currentPage
+                                    <span class="sr-only">(current)</span>
+                                </span>
+                            </li>
+                        }
+                        else if ((Model.Data.Offset + Model.Data.Limit * i < Model.Data.Total) && Model.Data.Offset + Model.Data.Limit * i >= 0)
+                        {
+                            <li class="page-item">
+                                @Html.ActionLink((currentPage + i).ToString(), "Search", "Home", new { startsWith = ViewBag.StartsWith, userLimit = Model.Data.Limit, userOffset = Model.Data.Offset + Model.Data.Limit * i }, new { @class = "page-link" })
+                            </li>
+                        }
+                    }
+
+                    if (Model.Data.Offset + Model.Data.Limit >= Model.Data.Total)
+                    {
+                        <li class="page-item disabled">
+                            <span class="page-link">Next</span>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="page-item">
+                            @Html.ActionLink("Next", "Search", "Home", new { startsWith = ViewBag.StartsWith, userLimit = Model.Data.Limit, userOffset = Model.Data.Offset + Model.Data.Limit }, new { @class = "page-link" })
+                        </li>
+                    }
+                }
+            </ul>
+        </nav>
+}
+else
+{
+    <h1>No Results For "@ViewBag.StartsWith"</h1>
+}

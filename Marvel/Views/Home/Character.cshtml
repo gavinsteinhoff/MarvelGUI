@@ -1,0 +1,62 @@
+﻿@model Marvel.Models.CharacterViewModel
+@{
+    ViewBag.Title = Model.Data.Results.First().Name;
+    ViewBag.Copyright = Model.AttributionText;
+}
+
+@foreach (var character in Model.Data.Results)
+{
+    <div class="row">
+        <div class="col-4">
+            <img class="w-100" src="@character.Thumbnail.Path.@character.Thumbnail.Extension.ToString().ToLower()" />
+            <p class="lead">@character.Description</p>
+        </div>
+        <div class="col-8">
+            <h1 class="mb-5">Comic Appearances</h1>
+            @foreach (var comic in character.ComicsModel.Data.Results)
+                {
+                    var purchase = comic.Urls.FirstOrDefault(u => u.Type.ToString().ToLower() == "purchase");
+                    string purchaseURL = string.Empty;
+                    string purchaseText = string.Empty;
+                    if (purchase != null)
+                    {
+                        purchaseURL = purchase.UrlUrl.ToString();
+                        purchaseText = purchase.Type.ToString();
+                    }
+
+                    <div class="shadow p-3 mb-5 bg-white rounded row __displayItem">
+                        <div class="col-2">
+                            <img class="w-100" src="@comic.Thumbnail.Path.@comic.Thumbnail.Extension.ToString().ToLower()" />
+                        </div>
+                        <div class="col-10 d-flex flex-column">
+                            <h3>@comic.Title Issue Number @comic.IssueNumber</h3>
+                            <p class="descriptions">@comic.Description</p>
+                            <p>Released on @comic.Dates.FirstOrDefault(d => d.Type.ToString() == "OnsaleDate").DateDate.AsDateTime().ToString("MMMM dd, yyyy")</p>
+                            <div class="d-flex flex-grow-1 align-items-end"><a href="@purchaseURL">@purchaseText</a></div>
+                        </div>
+                    </div>
+            }
+        </div>
+    </div>
+}
+
+
+
+@section scripts {
+
+    <script>
+        $(function () {
+            $(".descriptions").each(function (index) {
+                console.log(strip_html_tags($(this).html()));
+                $(this).html(strip_html_tags($(this).html()));
+            });
+        });
+        function strip_html_tags(str) {
+            if ((str === null) || (str === ''))
+                return false;
+            else
+                str = str.toString();
+            return str.replace(/&lt;[^&gt;]*&gt;/g, '');
+        }
+    </script>
+}
